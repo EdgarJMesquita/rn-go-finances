@@ -23,7 +23,7 @@ const icon = {
   total: "dollar-sign",
 };
 
-export function Card({ title, type, amount, lastTransaction }: Props) {
+export function SubTotalCard({ title, type, amount, lastTransaction }: Props) {
   return (
     <Container type={type}>
       <Header>

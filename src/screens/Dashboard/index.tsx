@@ -7,6 +7,7 @@ import {
   Icon,
   Photo,
   Title,
+  Transactions,
   User,
   UserContainer,
   UserGreeting,
@@ -14,7 +15,7 @@ import {
   UserName,
 } from "./styles";
 import { Feather } from "@expo/vector-icons";
-import { Card } from "../../components/Card";
+import { SubTotalCard } from "../../components/SubTotalCard";
 import { RFPercentage } from "react-native-responsive-fontsize";
 
 export function Dashboard() {
@@ -39,25 +40,28 @@ export function Dashboard() {
         horizontal
         showsHorizontalScrollIndicator={false}
       >
-        <Card
+        <SubTotalCard
           title="Entradas"
           amount="R$ 17.000,00"
           lastTransaction="Última transação em 31 de abril"
           type="up"
         />
-        <Card
+        <SubTotalCard
           title="Saídas"
           amount="R$ 17.000,00"
           lastTransaction="Última transação em sa "
           type="down"
         />
-        <Card
+        <SubTotalCard
           title="Total"
           amount="R$ 17.000,00"
           lastTransaction="Última transação em sa "
           type="total"
         />
       </ScrollView>
+      <Transactions>
+        <Title>Listagem</Title>
+      </Transactions>
     </Container>
   );
 }
