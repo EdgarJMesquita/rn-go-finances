@@ -31,3 +31,10 @@ export const Form = styled.View`
 export const Fields = styled.View`
   width: 100%;
 `;
+
+export const TransactionTypeButtonContainer = styled.View`
+  width: 100%;
+  justify-content: space-between;
+  flex-direction: row;
+  margin-top: 8px;
+`;
