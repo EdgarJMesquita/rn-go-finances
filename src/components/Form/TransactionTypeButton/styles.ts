@@ -1,4 +1,4 @@
-import styled from "styled-components/native";
+import styled, { css } from "styled-components/native";
 import { Feather } from "@expo/vector-icons";
 import { RFValue } from "react-native-responsive-fontsize";
 import { TouchableOpacity } from "react-native";
@@ -22,12 +22,19 @@ export const Container = styled(TouchableOpacity)<ContainerProps>`
   justify-content: center;
   align-items: center;
 
-  background-color: ${({ selected, type, theme }) =>
-    selected
-      ? type === "income"
-        ? theme.colors.successLight
-        : theme.colors.attentionLight
-      : "transparent"};
+  ${({ selected, type, theme }) =>
+    selected &&
+    type === "income" &&
+    css`
+      background-color: ${theme.colors.successLight};
+    `}
+
+  ${({ selected, type, theme }) =>
+    selected &&
+    type === "outcome" &&
+    css`
+      background-color: ${theme.colors.attentionLight};
+    `}
 `;
 
 export const Icon = styled(Feather).attrs({
