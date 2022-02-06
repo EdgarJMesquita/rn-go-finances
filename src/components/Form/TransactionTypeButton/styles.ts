@@ -22,6 +22,8 @@ export const Container = styled(TouchableOpacity)<ContainerProps>`
   justify-content: center;
   align-items: center;
 
+  margin-bottom: 16px;
+
   ${({ selected, type, theme }) =>
     selected &&
     type === "income" &&

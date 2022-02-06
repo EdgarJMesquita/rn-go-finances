@@ -4,6 +4,7 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { Dashboard } from "../screens/Dashboard";
 import { Login } from "../screens/Login";
 import { Register } from "../screens/Register";
+import { CategorySelect } from "../screens/CategorySelect";
 const { Navigator, Screen } = createNativeStackNavigator();
 
 export function AuthRoutes() {
