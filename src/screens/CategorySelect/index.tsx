@@ -1,5 +1,4 @@
-import { FlatList, Text } from "react-native";
-import { Button } from "../../components/Form/Button";
+import { FlatList } from "react-native";
 import { categories, Category } from "../../utils/category";
 import {
   CategoryCard,
@@ -10,6 +9,8 @@ import {
   Name,
   Separator,
   Title,
+  Button,
+  ButtonText,
 } from "./styles";
 
 interface Props {
@@ -40,6 +41,7 @@ export function CategorySelect({
           <CategoryCard
             onPress={() => setCategory(item)}
             isActive={category?.key === item.key}
+            activeOpacity={1}
           >
             <Icon name={item.icon} />
             <Name>{item.name}</Name>
@@ -48,7 +50,9 @@ export function CategorySelect({
       />
 
       <Footer>
-        <Button onPress={handleSelectCategory}>Selecionar</Button>
+        <Button activeOpacity={1} onPress={handleSelectCategory}>
+          <ButtonText>Selecionar</ButtonText>
+        </Button>
       </Footer>
     </Container>
   );

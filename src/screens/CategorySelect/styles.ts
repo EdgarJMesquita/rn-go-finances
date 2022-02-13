@@ -65,6 +65,14 @@ export const Footer = styled.View`
 export const Button = styled.TouchableOpacity`
   width: 100%;
   background-color: ${({ theme }) => theme.colors.secondary};
+  border-radius: 5px;
+  align-items: center;
+  padding: 18px;
 `;
 
-export const ButtonText = styled.Text``;
+export const ButtonText = styled.Text`
+  font-family: ${({ theme }) => theme.fonts.medium};
+  font-size: ${RFValue(14)}px;
+  color: ${({ theme }) => theme.colors.shape};
+  text-align: center;
+`;

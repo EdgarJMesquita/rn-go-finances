@@ -1,11 +1,7 @@
-import React from "react";
-
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import { Dashboard } from "../screens/Dashboard";
 import { Login } from "../screens/Login";
-import { Register } from "../screens/Register";
-import { CategorySelect } from "../screens/CategorySelect";
-const { Navigator, Screen } = createNativeStackNavigator();
+import { AppRoutes } from "./app.routes";
+const { Navigator, Screen, Group } = createNativeStackNavigator();
 
 export function AuthRoutes() {
   return (
@@ -14,9 +10,11 @@ export function AuthRoutes() {
         headerShown: false,
       }}
     >
-      <Screen name="Register" component={Register} />
-      <Screen name="Dashboard" component={Dashboard} />
-      <Screen name="Login" component={Login} />
+      {"user" ? (
+        <Screen name="AppRoutes" component={AppRoutes} />
+      ) : (
+        <Screen name="Login" component={Login} />
+      )}
     </Navigator>
   );
 }

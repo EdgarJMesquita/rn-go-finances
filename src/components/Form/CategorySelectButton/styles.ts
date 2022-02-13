@@ -16,10 +16,11 @@ export const Container = styled.TouchableOpacity.attrs({
   align-items: center;
 `;
 
-export const Title = styled.Text`
+export const Title = styled.Text<{ hasValue: boolean }>`
   font-family: ${({ theme }) => theme.fonts.regular};
   font-size: ${RFValue(14)}px;
-  color: ${({ theme }) => theme.colors.text};
+  color: ${({ theme, hasValue }) =>
+    hasValue ? theme.colors.title : theme.colors.text};
 `;
 
 export const Icon = styled(Feather)`

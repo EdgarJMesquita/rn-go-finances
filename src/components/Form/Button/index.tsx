@@ -1,14 +1,14 @@
 import React from "react";
-import { TouchableOpacityProps, View } from "react-native";
 import { Container, Title } from "./styles";
 
-interface Props extends TouchableOpacityProps {
+interface Props {
   children: string;
+  onPress: () => void;
 }
 
-export function Button({ children, ...rest }: Props) {
+export function Button({ children, onPress }: Props) {
   return (
-    <Container {...rest}>
+    <Container onPress={onPress} activeOpacity={0.7}>
       <Title>{children}</Title>
     </Container>
   );
