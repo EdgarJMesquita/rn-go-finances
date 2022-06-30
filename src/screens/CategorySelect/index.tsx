@@ -1,5 +1,5 @@
-import { FlatList } from "react-native";
-import { categories, Category } from "../../utils/category";
+import { FlatList } from 'react-native';
+import { categories, Category } from '../../utils/category';
 import {
   CategoryCard,
   Container,
@@ -11,10 +11,10 @@ import {
   Title,
   Button,
   ButtonText,
-} from "./styles";
+} from './styles';
 
 interface Props {
-  category?: Category;
+  category?: Category | null;
   setCategory: (category: Category) => void;
   closeSelectCategory: () => void;
 }
@@ -34,7 +34,7 @@ export function CategorySelect({
       </Header>
       <FlatList
         data={categories}
-        style={{ flex: 1, width: "100%" }}
+        style={{ flex: 1, width: '100%' }}
         keyExtractor={({ key }) => key}
         ItemSeparatorComponent={() => <Separator />}
         renderItem={({ item }) => (

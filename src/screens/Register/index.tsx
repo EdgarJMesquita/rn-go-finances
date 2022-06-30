@@ -18,6 +18,8 @@ import {
 import * as Yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { ScreenProps } from '../../routes/types';
+import uuid from 'react-native-uuid';
 
 interface FormData {
   name: string;
@@ -32,11 +34,12 @@ const Scheme = Yup.object().shape({
     .required('O valor é obrigatório'),
 });
 
-export function Register() {
+export function Register({ navigation }: ScreenProps) {
   const collectionKey = '@gofinances:transactions';
   const {
     control,
     handleSubmit,
+    reset,
     formState: { errors },
   } = useForm({
     resolver: yupResolver(Scheme),
@@ -44,7 +47,7 @@ export function Register() {
   const [transactionType, setTransactionType] = useState<
     'income' | 'outcome' | null
   >(null);
-  const [category, setCategory] = useState<Category>();
+  const [category, setCategory] = useState<Category | null>(null);
   const [isCategorySelectOpen, setCategorySelectOpen] = useState(false);
 
   function handleTransactionTypeSelect(type: 'income' | 'outcome') {
@@ -55,15 +58,27 @@ export function Register() {
     if (!transactionType) return Alert.alert('Selecione o tipo de transação');
     if (!category?.key) return Alert.alert('Selecione a categoria');
 
-    const data = {
+    const newTransaction: Transaction = {
+      id: uuid.v4(),
       name: form.name,
       amount: form.amount,
       transactionType,
       category: category?.key,
+      date: new Date().toISOString(),
     };
 
     try {
-      await AsyncStorage.setItem(collectionKey, JSON.stringify(data));
+      const store = await AsyncStorage.getItem(collectionKey);
+      const data = store ? JSON.parse(store) : [];
+      const updatedTransactions = [...data, newTransaction];
+      await AsyncStorage.setItem(
+        collectionKey,
+        JSON.stringify(updatedTransactions)
+      );
+      setCategory(null);
+      reset();
+      Alert.alert('Sucesso', 'Transação cadastrada com sucesso.');
+      navigation.jumpTo('Dashboard');
     } catch (error) {
       console.log(error);
       Alert.alert('Não foi possível salvar');

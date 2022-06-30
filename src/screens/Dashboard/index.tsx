@@ -1,5 +1,5 @@
-import React from "react";
-import { FlatList, ScrollView } from "react-native";
+import React, { useCallback, useEffect, useState } from 'react';
+import { Alert, FlatList, ScrollView } from 'react-native';
 import {
   Container,
   Header,
@@ -13,53 +13,80 @@ import {
   UserGreeting,
   UserInfo,
   UserName,
-} from "./styles";
-import { SubTotalCard } from "../../components/SubTotalCard";
-import { RFPercentage } from "react-native-responsive-fontsize";
-import {
-  DataProps,
-  TransactionCard,
-  TransactionCardProps,
-} from "../../components/TransactionCard";
+} from './styles';
+import { SubTotalCard } from '../../components/SubTotalCard';
+import { RFPercentage } from 'react-native-responsive-fontsize';
+import { DataProps, TransactionCard } from '../../components/TransactionCard';
+import AsyncStorageLib from '@react-native-async-storage/async-storage';
+import { collectionKey } from '../../utils/Constants';
+import { useFocusEffect } from '@react-navigation/native';
 
 export interface DataListProps extends DataProps {
   id: string;
 }
 
+const initialValue = {
+  income: 0,
+  outcome: 0,
+  lastIncome: '',
+  lastOutcome: '',
+};
+
 export function Dashboard() {
-  const data: DataListProps[] = [
-    {
-      id: "1",
-      type: "positive",
-      title: "Aplicativo de vendas",
-      amount: "R$ 10.000,00",
-      category: { icon: "dollar-sign", name: "Vendas" },
-      date: "12/07/1997",
-    },
-    {
-      id: "2",
-      type: "negative",
-      title: "Hamburgueria Pizzy",
-      amount: "R$ 59,00",
-      category: { icon: "coffee", name: "Alimentação" },
-      date: "10/07/1997",
-    },
-    {
-      id: "3",
-      type: "positive",
-      title: "Aplicativo de vendas",
-      amount: "R$ 10.000,00",
-      category: { icon: "shopping-bag", name: "Vendas" },
-      date: "12/07/1997",
-    },
-  ];
+  const [transactions, setTransactions] = useState<Transaction[] | null>(null);
+  const [overview, setOverview] = useState(initialValue);
+
+  useFocusEffect(
+    useCallback(() => {
+      (async () => {
+        try {
+          const store = await AsyncStorageLib.getItem(collectionKey);
+          const data: Transaction[] = store ? JSON.parse(store) : [];
+          setTransactions(data);
+        } catch (error) {
+          console.log(error);
+          Alert.alert('Não foi possível carregar as transações.');
+        }
+      })();
+    }, [])
+  );
+
+  useEffect(() => {
+    if (!transactions) return;
+    if (transactions.length === 0) return;
+
+    const overview = {
+      income: 0,
+      outcome: 0,
+      lastIncome: '',
+      lastOutcome: '',
+    };
+
+    transactions.forEach((category) => {
+      switch (category.transactionType) {
+        case 'income':
+          overview.income += parseFloat(category.amount);
+          overview.lastIncome = category.date;
+          break;
+        case 'outcome':
+          overview.outcome += parseFloat(category.amount);
+          overview.lastOutcome = category.date;
+          break;
+        default:
+          console.log('TransactionType incorreto.');
+          break;
+      }
+    });
+
+    setOverview(overview);
+  }, [transactions]);
 
   return (
     <Container>
       <Header>
         <UserContainer>
           <UserInfo>
-            <Photo source={{ uri: "https://github.com/EdgarXongas.png" }} />
+            <Photo source={{ uri: 'https://github.com/EdgarXongas.png' }} />
             <User>
               <UserGreeting>Olá,</UserGreeting>
               <UserName>Edgar</UserName>
@@ -71,26 +98,26 @@ export function Dashboard() {
         </UserContainer>
       </Header>
       <ScrollView
-        style={{ position: "absolute", marginTop: RFPercentage(20) }}
+        style={{ position: 'absolute', marginTop: RFPercentage(20) }}
         contentContainerStyle={{ paddingHorizontal: 24 }}
         horizontal
         showsHorizontalScrollIndicator={false}
       >
         <SubTotalCard
           title="Entradas"
-          amount="R$ 17.000,00"
+          amount={`R$ ${overview.income}`}
           lastTransaction="Última transação em 31 de abril"
           type="up"
         />
         <SubTotalCard
           title="Saídas"
-          amount="R$ 17.000,00"
+          amount={`R$ ${overview.outcome}`}
           lastTransaction="Última transação em sa "
           type="down"
         />
         <SubTotalCard
           title="Total"
-          amount="R$ 17.000,00"
+          amount={`R$ ${overview.income - overview.outcome}`}
           lastTransaction="Última transação em sa "
           type="total"
         />
@@ -99,7 +126,7 @@ export function Dashboard() {
         <Title>Listagem</Title>
 
         <FlatList
-          data={data}
+          data={transactions}
           keyExtractor={(_, index) => String(index)}
           renderItem={({ item }) => <TransactionCard data={item} />}
           showsVerticalScrollIndicator={false}
