@@ -5,11 +5,14 @@ import {
   isThisMonth,
   isThisWeek,
   isToday,
+  isYesterday,
   parseISO,
 } from 'date-fns';
 import ptBR from 'date-fns/locale/pt-BR';
 import { categories } from '../../utils/category';
 import { collectionKey } from '../../utils/Constants';
+import { formatAmount } from '../../utils/formatAmount';
+import { formatToFriendlyDate } from '../../utils/formatToFriendlyDate';
 import {
   Amount,
   Category,
@@ -41,28 +44,15 @@ export function TransactionCard({ data }: TransactionCardProps) {
     (category) => category.key === data.category
   );
 
-  const date = parseISO(data.date);
-  const today = `'Hoje às' HH:mm`;
-  const thisWeek = `EEEE 'às' HH:mm`;
-  const thisMonth = `'dia' dd 'às' HH:mm`;
-  const completeDate = `dd/MM/yyyy 'às' HH:mm`;
-  const formatSchema = isToday(date)
-    ? today
-    : isThisWeek(date)
-    ? thisWeek
-    : isThisMonth(date)
-    ? thisMonth
-    : completeDate;
-
-  const formattedDate = format(date, formatSchema, { locale: ptBR });
+  const formattedDate = formatToFriendlyDate(data.date);
 
   return (
     <Container>
       <Title>{data.name}</Title>
       <Amount type={data.transactionType}>
         {data.transactionType === 'outcome' && '- '}
-        {'R$ '}
-        {data.amount}
+
+        {formatAmount(data.amount)}
       </Amount>
       <Footer>
         <Category>

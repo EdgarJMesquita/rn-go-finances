@@ -59,7 +59,7 @@ export function Register({ navigation }: ScreenProps) {
     if (!category?.key) return Alert.alert('Selecione a categoria');
 
     const newTransaction: Transaction = {
-      id: uuid.v4(),
+      id: uuid.v4().toString(),
       name: form.name,
       amount: form.amount,
       transactionType,
@@ -77,6 +77,7 @@ export function Register({ navigation }: ScreenProps) {
       );
       setCategory(null);
       reset();
+      setTransactionType(null);
       Alert.alert('Sucesso', 'Transação cadastrada com sucesso.');
       navigation.jumpTo('Dashboard');
     } catch (error) {

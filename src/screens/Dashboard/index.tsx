@@ -1,5 +1,11 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { Alert, FlatList, ScrollView } from 'react-native';
+import {
+  ActivityIndicator,
+  Alert,
+  FlatList,
+  ScrollView,
+  View,
+} from 'react-native';
 import {
   Container,
   Header,
@@ -20,6 +26,10 @@ import { DataProps, TransactionCard } from '../../components/TransactionCard';
 import AsyncStorageLib from '@react-native-async-storage/async-storage';
 import { collectionKey } from '../../utils/Constants';
 import { useFocusEffect } from '@react-navigation/native';
+import { formatToFriendlyDate } from '../../utils/formatToFriendlyDate';
+import theme from '../../global/theme';
+import { formatAmount } from '../../utils/formatAmount';
+import { Loading } from '../../components/Loading';
 
 export interface DataListProps extends DataProps {
   id: string;
@@ -30,37 +40,34 @@ const initialValue = {
   outcome: 0,
   lastIncome: '',
   lastOutcome: '',
+  lastTransaction: '',
 };
 
 export function Dashboard() {
   const [transactions, setTransactions] = useState<Transaction[] | null>(null);
   const [overview, setOverview] = useState(initialValue);
 
-  useFocusEffect(
-    useCallback(() => {
-      (async () => {
-        try {
-          const store = await AsyncStorageLib.getItem(collectionKey);
-          const data: Transaction[] = store ? JSON.parse(store) : [];
-          setTransactions(data);
-        } catch (error) {
-          console.log(error);
-          Alert.alert('Não foi possível carregar as transações.');
-        }
-      })();
-    }, [])
-  );
-
-  useEffect(() => {
-    if (!transactions) return;
-    if (transactions.length === 0) return;
-
+  function handleOverview(transactions: Transaction[]) {
     const overview = {
       income: 0,
       outcome: 0,
       lastIncome: '',
       lastOutcome: '',
+      lastTransaction: '',
     };
+
+    const _transactions = [...transactions];
+    overview.lastIncome = _transactions
+      .filter((a) => a.transactionType === 'income')
+      .sort((a, b) => (new Date(a.date) > new Date(b.date) ? -1 : 1))[0]?.date;
+
+    overview.lastOutcome = _transactions
+      .filter((a) => a.transactionType === 'outcome')
+      .sort((a, b) => (new Date(a.date) > new Date(b.date) ? -1 : 1))[0]?.date;
+
+    overview.lastTransaction = _transactions.sort((a, b) =>
+      new Date(a.date) > new Date(b.date) ? -1 : 1
+    )[0]?.date;
 
     transactions.forEach((category) => {
       switch (category.transactionType) {
@@ -79,7 +86,28 @@ export function Dashboard() {
     });
 
     setOverview(overview);
-  }, [transactions]);
+  }
+
+  useFocusEffect(
+    useCallback(() => {
+      (async () => {
+        try {
+          const store = await AsyncStorageLib.getItem(collectionKey);
+          const data: Transaction[] = store ? JSON.parse(store) : [];
+          const sortedData = data.sort((a, b) =>
+            new Date(a.date) > new Date(b.date) ? -1 : 1
+          );
+          setTransactions(sortedData);
+          handleOverview(data);
+        } catch (error) {
+          console.log(error);
+          Alert.alert('Não foi possível carregar as transações.');
+        }
+      })();
+    }, [])
+  );
+
+  if (!transactions) return <Loading />;
 
   return (
     <Container>
@@ -105,20 +133,20 @@ export function Dashboard() {
       >
         <SubTotalCard
           title="Entradas"
-          amount={`R$ ${overview.income}`}
-          lastTransaction="Última transação em 31 de abril"
+          amount={formatAmount(overview.income)}
+          lastTransaction={formatToFriendlyDate(overview.lastIncome)}
           type="up"
         />
         <SubTotalCard
           title="Saídas"
-          amount={`R$ ${overview.outcome}`}
-          lastTransaction="Última transação em sa "
+          amount={formatAmount(overview.outcome)}
+          lastTransaction={formatToFriendlyDate(overview.lastOutcome)}
           type="down"
         />
         <SubTotalCard
           title="Total"
-          amount={`R$ ${overview.income - overview.outcome}`}
-          lastTransaction="Última transação em sa "
+          amount={formatAmount(overview.income - overview.outcome)}
+          lastTransaction={formatToFriendlyDate(overview.lastTransaction)}
           type="total"
         />
       </ScrollView>
