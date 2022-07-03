@@ -4,6 +4,7 @@ type RootStackParamsList = {
   Register: undefined;
   Dashboard: undefined;
   CategorySelect: undefined;
+  Resume: undefined;
 };
 
 export type ScreenProps = BottomTabScreenProps<RootStackParamsList>;
