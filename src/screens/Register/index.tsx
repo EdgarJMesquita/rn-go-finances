@@ -81,7 +81,6 @@ export function Register({ navigation }: ScreenProps) {
       Alert.alert('Sucesso', 'Transação cadastrada com sucesso.');
       navigation.jumpTo('Dashboard');
     } catch (error) {
-      console.log(error);
       Alert.alert('Não foi possível salvar');
     }
   }

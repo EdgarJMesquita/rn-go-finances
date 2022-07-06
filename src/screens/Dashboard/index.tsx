@@ -100,7 +100,6 @@ export function Dashboard() {
           setTransactions(sortedData);
           handleOverview(data);
         } catch (error) {
-          console.log(error);
           Alert.alert('Não foi possível carregar as transações.');
         }
       })();
