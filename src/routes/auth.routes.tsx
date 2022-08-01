@@ -10,7 +10,7 @@ export function AuthRoutes() {
         headerShown: false,
       }}
     >
-      {"user" ? (
+      {!"user" ? (
         <Screen name="AppRoutes" component={AppRoutes} />
       ) : (
         <Screen name="Login" component={Login} />
