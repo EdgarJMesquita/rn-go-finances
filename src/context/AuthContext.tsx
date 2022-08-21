@@ -1,10 +1,11 @@
-import { createContext, ReactNode, useState } from "react";
+import { createContext, ReactNode, useEffect, useState } from "react";
 import * as AuthSession from "expo-auth-session";
 
 import {
   GoogleSignin,
   GoogleSigninButton,
   statusCodes,
+  User,
 } from "@react-native-google-signin/google-signin";
 
 GoogleSignin.configure({
@@ -13,12 +14,12 @@ GoogleSignin.configure({
   offlineAccess: false,
 });
 
-type User = {
-  id: string;
-  name: string;
-  email: string;
-  photo?: string;
-};
+// type User = {
+//   id: string;
+//   name: string;
+//   email: string;
+//   photo?: string;
+// };
 
 type AuthContextProps = {
   user: User | null;
@@ -54,9 +55,17 @@ function AuthProvider({ children }: AuthProvierProps) {
       console.log(userInfo);
     } catch (error) {
       console.log(error);
-      throw new Error(error);
+      throw new Error("error");
     }
   }
+
+  useEffect(() => {
+    async function checkIfUserAlreadySignIn() {
+      const response = await GoogleSignin.getCurrentUser();
+      setUSer(response);
+    }
+    checkIfUserAlreadySignIn();
+  }, []);
 
   return (
     <AuthContext.Provider value={{ user, signInWithGoogle }}>

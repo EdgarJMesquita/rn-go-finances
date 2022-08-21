@@ -1,11 +1,5 @@
-import React, { useCallback, useEffect, useState } from 'react';
-import {
-  ActivityIndicator,
-  Alert,
-  FlatList,
-  ScrollView,
-  View,
-} from 'react-native';
+import React, { useCallback, useState } from "react";
+import { Alert, FlatList, ScrollView } from "react-native";
 import {
   Container,
   Header,
@@ -14,22 +8,22 @@ import {
   Photo,
   Title,
   Transactions,
-  User,
+  UserSection,
   UserContainer,
   UserGreeting,
   UserInfo,
   UserName,
-} from './styles';
-import { SubTotalCard } from '../../components/SubTotalCard';
-import { RFPercentage } from 'react-native-responsive-fontsize';
-import { DataProps, TransactionCard } from '../../components/TransactionCard';
-import AsyncStorageLib from '@react-native-async-storage/async-storage';
-import { collectionKey } from '../../utils/Constants';
-import { useFocusEffect } from '@react-navigation/native';
-import { formatToFriendlyDate } from '../../utils/formatToFriendlyDate';
-import theme from '../../global/theme';
-import { formatAmount } from '../../utils/formatAmount';
-import { Loading } from '../../components/Loading';
+} from "./styles";
+import { SubTotalCard } from "../../components/SubTotalCard";
+import { RFPercentage } from "react-native-responsive-fontsize";
+import { DataProps, TransactionCard } from "../../components/TransactionCard";
+import AsyncStorageLib from "@react-native-async-storage/async-storage";
+import { collectionKey } from "../../utils/Constants";
+import { useFocusEffect } from "@react-navigation/native";
+import { formatToFriendlyDate } from "../../utils/formatToFriendlyDate";
+import { formatAmount } from "../../utils/formatAmount";
+import { Loading } from "../../components/Loading";
+import { useAuth } from "../../hooks/useAuth";
 
 export interface DataListProps extends DataProps {
   id: string;
@@ -38,12 +32,13 @@ export interface DataListProps extends DataProps {
 const initialValue = {
   income: 0,
   outcome: 0,
-  lastIncome: '',
-  lastOutcome: '',
-  lastTransaction: '',
+  lastIncome: "",
+  lastOutcome: "",
+  lastTransaction: "",
 };
 
 export function Dashboard() {
+  const { user } = useAuth();
   const [transactions, setTransactions] = useState<Transaction[] | null>(null);
   const [overview, setOverview] = useState(initialValue);
 
@@ -51,18 +46,18 @@ export function Dashboard() {
     const overview = {
       income: 0,
       outcome: 0,
-      lastIncome: '',
-      lastOutcome: '',
-      lastTransaction: '',
+      lastIncome: "",
+      lastOutcome: "",
+      lastTransaction: "",
     };
 
     const _transactions = [...transactions];
     overview.lastIncome = _transactions
-      .filter((a) => a.transactionType === 'income')
+      .filter((a) => a.transactionType === "income")
       .sort((a, b) => (new Date(a.date) > new Date(b.date) ? -1 : 1))[0]?.date;
 
     overview.lastOutcome = _transactions
-      .filter((a) => a.transactionType === 'outcome')
+      .filter((a) => a.transactionType === "outcome")
       .sort((a, b) => (new Date(a.date) > new Date(b.date) ? -1 : 1))[0]?.date;
 
     overview.lastTransaction = _transactions.sort((a, b) =>
@@ -71,16 +66,16 @@ export function Dashboard() {
 
     transactions.forEach((category) => {
       switch (category.transactionType) {
-        case 'income':
+        case "income":
           overview.income += parseFloat(category.amount);
           overview.lastIncome = category.date;
           break;
-        case 'outcome':
+        case "outcome":
           overview.outcome += parseFloat(category.amount);
           overview.lastOutcome = category.date;
           break;
         default:
-          console.log('TransactionType incorreto.');
+          console.log("TransactionType incorreto.");
           break;
       }
     });
@@ -100,7 +95,7 @@ export function Dashboard() {
           setTransactions(sortedData);
           handleOverview(data);
         } catch (error) {
-          Alert.alert('Não foi possível carregar as transações.');
+          Alert.alert("Não foi possível carregar as transações.");
         }
       })();
     }, [])
@@ -113,11 +108,11 @@ export function Dashboard() {
       <Header>
         <UserContainer>
           <UserInfo>
-            <Photo source={{ uri: 'https://github.com/EdgarXongas.png' }} />
-            <User>
+            <Photo source={{ uri: user?.user.photo || " " }} />
+            <UserSection>
               <UserGreeting>Olá,</UserGreeting>
-              <UserName>Edgar</UserName>
-            </User>
+              <UserName>{user?.user.name}</UserName>
+            </UserSection>
           </UserInfo>
           <LogoutButton onPress={() => {}}>
             <Icon name="power" />
@@ -125,7 +120,7 @@ export function Dashboard() {
         </UserContainer>
       </Header>
       <ScrollView
-        style={{ position: 'absolute', marginTop: RFPercentage(20) }}
+        style={{ position: "absolute", marginTop: RFPercentage(20) }}
         contentContainerStyle={{ paddingHorizontal: 24 }}
         horizontal
         showsHorizontalScrollIndicator={false}

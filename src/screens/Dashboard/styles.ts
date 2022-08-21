@@ -45,7 +45,7 @@ export const Photo = styled.Image`
   border-radius: 10px;
 `;
 
-export const User = styled.View`
+export const UserSection = styled.View`
   margin-left: 17px;
 `;
 
